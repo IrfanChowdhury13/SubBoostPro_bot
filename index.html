@@ -7,7 +7,17 @@
 
 <body>
 
-<div id="loginBox"></div>
+<div id="loginBox">
+
+  <a href="https://t.me/SubBoostProIZC_bot" target="_blank">
+    <button>📩 Open Telegram Bot</button>
+  </a>
+
+  <input type="text" id="useridInput" placeholder="Enter your Telegram ID">
+
+  <button onclick="login()">Login</button>
+
+</div>
 
 <div id="app" style="display:none">
 
@@ -70,22 +80,45 @@ button {
   color:white;
   border-radius:8px;
 }
+
+  #loginBox {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+#loginBox input {
+  padding:10px;
+  border:none;
+  border-radius:8px;
+}
+
+#loginBox button {
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#3b82f6;
+  color:white;
+}
 </style>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbygcTQPEjhx6n3iLr9OoY3ncWMzmO6jLUYVZKOSYJFGFUirg0TPSSs7jm_iF40gnpRCpA/exec";
 
 // TELEGRAM LOGIN
-const script = document.createElement("script");
-script.src = "https://telegram.org/js/telegram-widget.js?22";
-script.setAttribute("data-telegram-login", "SubBoostProIZC_bot");
-script.setAttribute("data-size", "large");
-script.setAttribute("data-userpic", "true");
-script.setAttribute("data-request-access", "write");
-script.setAttribute("data-onauth", "onTelegramAuth"); // ✅ FIX
-script.async = true;
+function login(){
+  const id = document.getElementById("useridInput").value;
 
-document.getElementById("loginBox").appendChild(script);
+  if(!id){
+    alert("Enter your Telegram ID");
+    return;
+  }
+
+  localStorage.setItem("id", id);
+  localStorage.setItem("name", "User-"+id.slice(0,5));
+
+  startApp();
+}
 
 // LOGIN FUNCTION
 function onTelegramAuth(user) {

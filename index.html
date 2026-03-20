@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earn App</title>
+</head>
+
+<body>
+
+<div id="loginBox"></div>
+
+<div id="app" style="display:none">
+
+<!-- PROFILE -->
+<div class="profile">
+  <div class="avatar">👤</div>
+  <div>
+    <h3 id="username"></h3>
+    <p>ID: <span id="userid"></span></p>
+  </div>
+</div>
+
+<!-- BALANCE -->
+<div class="top">
+  <h2>Balance</h2>
+  <h1 id="points">0</h1>
+</div>
+
+<!-- TASK -->
+<button onclick="earn()">Earn +2</button>
+
+</div>
+
+<style>
+body {
+  background:#0b1220;
+  color:white;
+  font-family:sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+#app {
+  width:100%;
+  max-width:400px;
+}
+
+.profile {
+  background:#1e293b;
+  padding:15px;
+  border-radius:10px;
+}
+
+.top {
+  background:#3b82f6;
+  padding:20px;
+  margin-top:10px;
+  border-radius:10px;
+  text-align:center;
+}
+
+button {
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  background:#22c55e;
+  color:white;
+  border-radius:8px;
+}
+</style>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbygcTQPEjhx6n3iLr9OoY3ncWMzmO6jLUYVZKOSYJFGFUirg0TPSSs7jm_iF40gnpRCpA/exec";
+
+// TELEGRAM LOGIN
+const script = document.createElement("script");
+script.src = "https://telegram.org/js/telegram-widget.js?22";
+script.setAttribute("data-telegram-login", "YTSub4Subbyizc_bot");
+script.setAttribute("data-size", "large");
+script.setAttribute("data-userpic", "true");
+script.setAttribute("data-request-access", "write");
+script.setAttribute("data-onauth", "onTelegramAuth(user)");
+document.getElementById("loginBox").appendChild(script);
+
+// LOGIN FUNCTION
+function onTelegramAuth(user) {
+  localStorage.setItem("id", user.id);
+  localStorage.setItem("name", user.first_name);
+
+  startApp();
+}
+
+// AUTO LOGIN
+function startApp() {
+  const id = localStorage.getItem("id");
+  const name = localStorage.getItem("name");
+
+  if (!id) return;
+
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("app").style.display="block";
+
+  document.getElementById("userid").innerText=id;
+  document.getElementById("username").innerText=name;
+
+  fetch(API + "?action=register&user="+id+"&name="+name);
+  loadPoints();
+}
+
+// LOAD POINTS
+function loadPoints(){
+  const id = localStorage.getItem("id");
+  fetch(API + "?action=getPoints&user="+id)
+  .then(r=>r.text())
+  .then(d=>{
+    document.getElementById("points").innerText=d;
+  });
+}
+
+// EARN
+function earn(){
+  const id = localStorage.getItem("id");
+  fetch(API + "?action=addPoints&user="+id)
+  .then(()=>loadPoints());
+}
+
+startApp();
+</script>
+
+</body>
+</html>

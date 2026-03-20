@@ -47,7 +47,7 @@
 
   <div class="card">
     <p>📺 Subscribe Channel</p>
-    <button onclick="earn(2)">+2 Points</button>
+    <button onclick="showTab('taskPage')">Start Task</button>
   </div>
 
   <div class="card">
@@ -74,6 +74,27 @@
 
 </div>
 
+<!-- Task Page   -->
+<div id="taskPage" class="tab">
+
+  <div class="card">
+    <p>Task #1</p>
+    <a href="https://youtube.com" target="_blank">Open Channel</a>
+
+    <button onclick="submitTask(1)" id="btn1">Submit Screenshot</button>
+    <p id="status1"></p>
+  </div>
+
+  <div class="card">
+    <p>Task #2</p>
+    <a href="https://youtube.com" target="_blank">Open Channel</a>
+
+    <button onclick="submitTask(2)" id="btn2">Submit Screenshot</button>
+    <p id="status2"></p>
+  </div>
+
+</div>
+  
 
 <style>
 body {
@@ -175,7 +196,7 @@ button {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbygcTQPEjhx6n3iLr9OoY3ncWMzmO6jLUYVZKOSYJFGFUirg0TPSSs7jm_iF40gnpRCpA/exec";
 
-// TELEGRAM LOGIN
+// LOGIN
 function login(){
   const id = document.getElementById("useridInput").value;
 
@@ -190,17 +211,7 @@ function login(){
   startApp();
 }
 
-// LOGIN FUNCTION
-function onTelegramAuth(user) {
-  alert("Login Success: " + user.first_name); // 👈 test
-
-  localStorage.setItem("id", user.id);
-  localStorage.setItem("name", user.first_name);
-
-  startApp();
-}
-
-// AUTO LOGIN
+// START APP
 function startApp() {
   const id = localStorage.getItem("id");
   const name = localStorage.getItem("name");
@@ -214,12 +225,15 @@ function startApp() {
   document.getElementById("username").innerText=name;
 
   fetch(API + "?action=register&user="+id+"&name="+name);
+
   loadPoints();
+  loadTaskStatus(); // ✅ IMPORTANT
 }
 
 // LOAD POINTS
 function loadPoints(){
   const id = localStorage.getItem("id");
+
   fetch(API + "?action=getPoints&user="+id)
   .then(r=>r.text())
   .then(d=>{
@@ -227,19 +241,52 @@ function loadPoints(){
   });
 }
 
-// EARN
+// EARN (optional)
 function earn(point){
   const id = localStorage.getItem("id");
+
   fetch(API + "?action=addPoints&user="+id+"&amount="+point)
   .then(()=>loadPoints());
 }
 
-startApp();
-
-  function showTab(tab) {
+// TAB SWITCH
+function showTab(tab) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.getElementById(tab).classList.add("active");
 }
+
+// SUBMIT TASK
+function submitTask(taskId){
+  const id = localStorage.getItem("id");
+
+  if(localStorage.getItem("task"+taskId)){
+    alert("Already Submitted");
+    return;
+  }
+
+  localStorage.setItem("task"+taskId, "submitted");
+
+  document.getElementById("btn"+taskId).style.display="none";
+  document.getElementById("status"+taskId).innerText="Submitted for verification";
+
+  fetch(API + "?action=submitTask&user="+id+"&task="+taskId);
+}
+
+// LOAD TASK STATUS
+function loadTaskStatus(){
+  [1,2].forEach(taskId=>{
+    if(localStorage.getItem("task"+taskId)){
+      const btn = document.getElementById("btn"+taskId);
+      const status = document.getElementById("status"+taskId);
+
+      if(btn) btn.style.display="none";
+      if(status) status.innerText="Submitted for verify";
+    }
+  });
+}
+
+// AUTO START
+startApp();
 </script>
 
 </body>

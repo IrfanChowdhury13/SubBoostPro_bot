@@ -19,7 +19,7 @@
 
 </div>
 
-<div id="app" style="display:none">
+  <div id="app" style="display:none">
 
 <!-- PROFILE -->
 <div class="profile">
@@ -36,10 +36,44 @@
   <h1 id="points">0</h1>
 </div>
 
-<!-- TASK -->
-<button onclick="earn()">Earn +2</button>
+<!-- MENU -->
+<div class="menu">
+  <button onclick="showTab('tasks')">📋 Tasks</button>
+  <button onclick="showTab('services')">💰 Services</button>
+</div>
+
+<!-- TASKS -->
+<div id="tasks" class="tab active">
+
+  <div class="card">
+    <p>📺 Subscribe Channel</p>
+    <button onclick="earn(2)">+2 Points</button>
+  </div>
+
+  <div class="card">
+    <p>👁 Watch Video</p>
+    <button onclick="earn(5)">+5 Points</button>
+  </div>
 
 </div>
+
+<!-- SERVICES -->
+<div id="services" class="tab">
+
+  <div class="card">
+    <p>👤 Buy Subscribers</p>
+    <button onclick="buy(2)">Cost 2</button>
+  </div>
+
+  <div class="card">
+    <p>👁 Buy Views</p>
+    <button onclick="buy(5)">Cost 5</button>
+  </div>
+
+</div>
+
+</div>
+
 
 <style>
 body {
@@ -100,6 +134,35 @@ button {
   background:#3b82f6;
   color:white;
 }
+
+  .menu {
+  display:flex;
+  margin-top:10px;
+}
+
+.menu button {
+  flex:1;
+  padding:12px;
+  border:none;
+  background:#1e293b;
+  color:white;
+  font-weight:bold;
+}
+
+.card {
+  background:#1e293b;
+  padding:15px;
+  margin-top:10px;
+  border-radius:12px;
+}
+
+.tab {
+  display:none;
+}
+
+.tab.active {
+  display:block;
+}
 </style>
 
 <script>
@@ -158,13 +221,18 @@ function loadPoints(){
 }
 
 // EARN
-function earn(){
+function earn(point){
   const id = localStorage.getItem("id");
-  fetch(API + "?action=addPoints&user="+id)
+  fetch(API + "?action=addPoints&user="+id+"&amount="+point)
   .then(()=>loadPoints());
 }
 
 startApp();
+
+  function showTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+}
 </script>
 
 </body>

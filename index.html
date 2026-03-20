@@ -204,9 +204,15 @@ button {
 }
 
 #app{
+  #app{
   width:100%;
   max-width:420px;
   padding:15px;
+
+  display: flex;
+  flex-direction:column; /* 🔥 MAIN FIX */
+  gap:12px;
+}
 }
 
 /* PROFILE */
@@ -251,12 +257,15 @@ button {
 
 /* CARD */
 .card{
+  width:100%;
   background:#1e293b;
   padding:15px;
   border-radius:15px;
   margin-bottom:10px;
 }
-
+.profile, .top, .menu, .tab{
+  width:100%;
+}
 /* BUTTON */
 button{
   width:100%;

@@ -81,23 +81,25 @@
     <p>Task #1</p>
     <a href="https://youtube.com" target="_blank">Open Channel</a>
 
-    <button onclick="submitTask(1)" id="btn1">Submit Screenshot</button>
-    <p id="status1"></p>
+    <input type="file" id="file1">
+<button onclick="uploadTask(1)">Submit Screenshot</button>
+<p id="status1"></p>
   </div>
 
   <div class="card">
     <p>Task #2</p>
     <a href="https://youtube.com" target="_blank">Open Channel</a>
 
-    <button onclick="submitTask(2)" id="btn2">Submit Screenshot</button>
-    <p id="status2"></p>
+    <input type="file" id="file2">
+<button onclick="uploadTask(2)">Submit Screenshot</button>
+<p id="status2"></p>
   </div>
 
 </div>
   
 
 <style>
-body {
+/* body {
   background:#0b1220;
   color:white;
   font-family:sans-serif;
@@ -190,7 +192,91 @@ button {
 #services .card p  
 {
   text-align: center;
-}  
+}   */
+  
+  body{
+  margin:0;
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  color:white;
+  display:flex;
+  justify-content:center;
+}
+
+#app{
+  width:100%;
+  max-width:420px;
+  padding:15px;
+}
+
+/* PROFILE */
+.profile{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:#1e293b;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:10px;
+}
+
+.avatar{
+  font-size:30px;
+}
+
+/* BALANCE */
+.top{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  margin-bottom:15px;
+}
+
+/* MENU */
+.menu{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.menu button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#1e293b;
+  color:white;
+}
+
+/* CARD */
+.card{
+  background:#1e293b;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:10px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+  color:white;
+  font-size:15px;
+}
+
+/* LINK */
+a{
+  color:#60a5fa;
+}
+
+/* TAB */
+.tab{display:none;}
+.tab.active{display:block;}
 </style>
 
 <script>
@@ -283,6 +369,45 @@ function loadTaskStatus(){
       if(status) status.innerText="Submitted for verify";
     }
   });
+}
+
+  function uploadTask(taskId){
+  const id = localStorage.getItem("id");
+  const fileInput = document.getElementById("file"+taskId);
+  const file = fileInput.files[0];
+
+  if(!file){
+    alert("Select screenshot first");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+    const base64 = reader.result.split(",")[1];
+
+    fetch(API, {
+      method:"POST",
+      body: JSON.stringify({
+        action:"upload",
+        user:id,
+        task:taskId,
+        file:base64,
+        name:file.name
+      })
+    })
+    .then(r=>r.text())
+    .then(res=>{
+      localStorage.setItem("task"+taskId,"submitted");
+
+      document.getElementById("status"+taskId).innerText="Submitted for verification";
+      document.getElementById("file"+taskId).style.display="none";
+
+      alert("Uploaded সফল");
+    });
+  };
+
+  reader.readAsDataURL(file);
 }
 
 // AUTO START

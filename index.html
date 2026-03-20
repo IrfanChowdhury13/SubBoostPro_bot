@@ -82,11 +82,15 @@ script.setAttribute("data-telegram-login", "SubBoostProIZC_bot");
 script.setAttribute("data-size", "large");
 script.setAttribute("data-userpic", "true");
 script.setAttribute("data-request-access", "write");
-script.setAttribute("data-onauth", "onTelegramAuth(user)");
+script.setAttribute("data-onauth", "onTelegramAuth"); // ✅ FIX
+script.async = true;
+
 document.getElementById("loginBox").appendChild(script);
 
 // LOGIN FUNCTION
 function onTelegramAuth(user) {
+  alert("Login Success: " + user.first_name); // 👈 test
+
   localStorage.setItem("id", user.id);
   localStorage.setItem("name", user.first_name);
 

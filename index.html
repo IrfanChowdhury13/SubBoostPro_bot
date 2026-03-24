@@ -106,16 +106,110 @@ function loadUser() {
 
 function showTasks() {
   document.getElementById("content").innerHTML = `
-    <div class="bg-white p-4 rounded shadow mb-2">
-      <h2>Watch Video</h2>
-      <button onclick="openTask(1)" class="bg-blue-500 text-white px-3 py-1 mt-2 rounded w-full">Open</button>
+    <div class="bg-white p-4 rounded-xl shadow">
+      
+      <h2 class="text-lg font-bold">Watch Video</h2>
+      
+      <div id="videoList" class="mt-3 space-y-2"></div>
+
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow mt-3">
+      <h2 class="text-lg font-bold">Do Subscribe</h2>
+      <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded w-full">
+        Click Here
+      </button>
     </div>
   `;
+
+  loadVideos();
 }
 
+const videos = [
+  { id: 1, title: "Video 1", link: "https://youtube.com/shorts/r4w32lZggBE?si=uSX9reKL0ISvuBQ7" },
+  { id: 2, title: "Video 2", link: "https://youtube.com/shorts/rR_fKP3VqLg?si=RkV6jnEBlb68gbug" }
+];
+  
+
+  function loadVideos() {
+  const container = document.getElementById("videoList");
+
+  videos.forEach(v => {
+    container.innerHTML += `
+      <div class="p-3 border rounded flex justify-between items-center">
+        <span>${v.title}</span>
+        <button onclick="watchVideo('${v.link}', ${v.id})"
+          class="bg-green-500 text-white px-3 py-1 rounded">
+          Click Here
+        </button>
+      </div>
+    `;
+  });
+}
+
+function watchVideo(link, id) {
+  let startTime = Date.now();
+
+  const popup = window.open(link, "_blank");
+
+  let checkInterval = setInterval(() => {
+
+    // if popup closed
+    if (popup.closed) {
+      clearInterval(checkInterval);
+      alert("❌ Video incomplete");
+      return;
+    }
+
+    let watchedTime = Date.now() - startTime;
+
+    // 10 sec = minimum (tumi change korte parba)
+    if (watchedTime > 10000) {
+      clearInterval(checkInterval);
+
+      popup.close();
+      completeTask(id);
+    }
+
+  }, 1000);
+}
+
+function completeTask(id) {
+  const btns = document.querySelectorAll("button");
+
+  btns.forEach(btn => {
+    if (btn.innerText === "Click Here") {
+      btn.disabled = true;
+      btn.innerText = "Completed";
+      btn.classList.add("bg-gray-400");
+    }
+  });
+
+  addPoints(10); // each video 10 points
+}
+
+  if (action === "addPoints") {
+  const uid = e.parameter.uid;
+  const points = Number(e.parameter.points);
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == uid) {
+      let current = data[i][3] || 0;
+      sheet.getRange(i + 1, 4).setValue(current + points);
+      break;
+    }
+  }
+
+  return ContentService.createTextOutput("Points Added");
+}
+  
 function showServices() {
   document.getElementById("content").innerHTML = "Coming Soon";
 }
+  
 
 function openTask(id) {
   document.getElementById("content").innerHTML = `

@@ -1,424 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sub Boost Pro</title>
+  <title>SubBoost Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-100">
 
-<body>
+<div class="p-4">
+  <h1 class="text-2xl font-bold">SubBoost Pro</h1>
 
-<div id="loginBox">
-
-  <a href="https://t.me/SubBoostProIZC_bot" target="_blank">
-    <button>📩 Open Telegram Bot</button>
-  </a>
-
-  <input type="text" id="useridInput" placeholder="Enter your Telegram ID">
-
-  <button onclick="login()">Login</button>
-
-</div>
-
-  <div id="app" style="display:none">
-
-<!-- PROFILE -->
-<div class="profile">
-  <div class="avatar">👤</div>
-  <div>
-    <h3 id="username"></h3>
-    <p>ID: <span id="userid"></span></p>
-  </div>
-</div>
-
-<!-- BALANCE -->
-<div class="top">
-  <h2>Total Points</h2>
-  <h1 id="points">0</h1>
-</div>
-
-<!-- MENU -->
-<div class="menu">
-  <button onclick="showTab('tasks')">📋 Tasks</button>
-  <button onclick="showTab('services')">💰 Services</button>
-</div>
-
-<!-- TASKS -->
-<div id="tasks" class="tab active">
-
-  <div class="card">
-    <p>📺 Subscribe Channel</p>
-    <button onclick="showTab('taskPage')">Start Task</button>
+  <!-- User Info -->
+  <div class="mt-4 bg-white p-4 rounded-xl shadow">
+    <p>Name: <span id="name"></span></p>
+    <p>UID: <span id="uid"></span></p>
   </div>
 
-  <div class="card">
-    <p>👁 Watch Video</p>
-    <button onclick="earn(5)">+5 Points</button>
+  <!-- Points Card -->
+  <div class="mt-4 bg-blue-500 text-white p-4 rounded-xl">
+    <h2>Total Points</h2>
+    <p id="points">0</p>
   </div>
 
+  <!-- Tabs -->
+  <div class="mt-4 flex gap-2">
+    <button onclick="showTasks()" class="bg-black text-white px-4 py-2 rounded">Tasks</button>
+    <button onclick="showServices()" class="bg-gray-300 px-4 py-2 rounded">Services</button>
+  </div>
+
+  <!-- Content -->
+  <div id="content" class="mt-4"></div>
 </div>
-
-<!-- SERVICES -->
-<div id="services" class="tab">
-
-  <div class="card">
-    <p>👤 Buy Subscribers</p>
-    <button onclick="buy(2)">Cost 2</button>
-  </div>
-
-  <div class="card">
-    <p>👁 Buy Views</p>
-    <button onclick="buy(5)">Cost 5</button>
-  </div>
-
-</div>
-
-</div>
-
-<!-- Task Page   -->
-<div id="taskPage" class="tab">
-
-  <div class="card">
-    <p>Task #1</p>
-    <a href="https://youtube.com" target="_blank">Open Channel</a>
-
-    <input type="file" id="file1">
-<button onclick="uploadTask(1)">Submit Screenshot</button>
-<p id="status1"></p>
-  </div>
-
-  <div class="card">
-    <p>Task #2</p>
-    <a href="https://youtube.com" target="_blank">Open Channel</a>
-
-    <input type="file" id="file2">
-<button onclick="uploadTask(2)">Submit Screenshot</button>
-<p id="status2"></p>
-  </div>
-
-</div>
-  
-
-<style>
-/* body {
-  background:#0b1220;
-  color:white;
-  font-family:sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-
-#app {
-  width:100%;
-  max-width:400px;
-}
-
-.profile {
-  background:#1e293b;
-  padding:15px;
-  border-radius:10px;
-}
-
-.top {
-  background:#3b82f6;
-  padding:20px;
-  margin-top:10px;
-  border-radius:10px;
-  text-align:center;
-}
-
-button {
-  width:100%;
-  padding:15px;
-  margin-top:10px;
-  border:none;
-  background:#22c55e;
-  color:white;
-  border-radius:8px;
-}
-
-  #loginBox {
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-#loginBox input {
-  padding:10px;
-  border:none;
-  border-radius:8px;
-}
-
-#loginBox button {
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#3b82f6;
-  color:white;
-}
-
-  .menu {
-  display:flex;
-  margin-top:10px;
-    padding:10px;
-    gap:10px;
-}
-
-.menu button {
-  flex:1;
-  padding:12px;
-  border:none;
-  background:#1e293b;
-  color:white;
-  font-weight:bold;
-}
-
-.card {
-  background:#1e293b;
-  padding:15px;
-  margin-top:10px;
-  border-radius:12px;
-}
-
-.tab {
-  display:none;
-}
-
-.tab.active {
-  display:block;
-}
-#tasks .card p,
-#services .card p  
-{
-  text-align: center;
-}   */
-  
-  body{
-  margin:0;
-  font-family:sans-serif;
-  background:linear-gradient(135deg,#0f172a,#020617);
-  color:white;
-}
-#app{
-  max-width:100%;
-  padding:15px;
-  display: flex !important;
-  flex-direction:column; /* 🔥 MAIN FIX */
-  gap:12px;
-}
-
-
-/* PROFILE */
-.profile{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  background:#1e293b;
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:10px;
-}
-
-.avatar{
-  font-size:30px;
-}
-
-/* BALANCE */
-.top{
-  background:linear-gradient(135deg,#3b82f6,#2563eb);
-  padding:25px;
-  border-radius:20px;
-  text-align:center;
-  margin-bottom:15px;
-}
-
-/* MENU */
-.menu{
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.menu button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#1e293b;
-  color:white;
-}
-
-/* CARD */
-.card{
-  background:#1e293b;
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:10px;
-}
-/* .profile, .top, .menu, .tab{
-  width:100%;
-} */
-/* BUTTON */
-button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(90deg,#22c55e,#16a34a);
-  color:white;
-  font-size:15px;
-}
-
-/* LINK */
-a{
-  color:#60a5fa;
-}
-#taskPage {
-  padding: 10px 15px;
-}
-  input {
-    margin: 25px 0px;
-  }
-/* TAB */
-.tab{display:none;}
-.tab.active{display:block;}
-</style>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbygcTQPEjhx6n3iLr9OoY3ncWMzmO6jLUYVZKOSYJFGFUirg0TPSSs7jm_iF40gnpRCpA/exec";
+const API = "YOUR_GOOGLE_SCRIPT_URL";
 
-// LOGIN
-function login(){
-  const id = document.getElementById("useridInput").value;
+function loadUser() {
+  const uid = localStorage.getItem("uid");
 
-  if(!id){
-    alert("Enter your Telegram ID");
-    return;
-  }
-
-  localStorage.setItem("id", id);
-  localStorage.setItem("name", "User-"+id.slice(0,10));
-
-  startApp();
-}
-
-// START APP
-function startApp() {
-  const id = localStorage.getItem("id");
-  const name = localStorage.getItem("name");
-
-  if (!id) return;
-
-  document.getElementById("loginBox").style.display="none";
-  document.getElementById("app").style.display="block";
-
-  document.getElementById("userid").innerText=id;
-  document.getElementById("username").innerText=name;
-
-  fetch(API + "?action=register&user="+id+"&name="+name);
-
-  loadPoints();
-  loadTaskStatus(); // ✅ IMPORTANT
-}
-
-// LOAD POINTS
-function loadPoints(){
-  const id = localStorage.getItem("id");
-
-  fetch(API + "?action=getPoints&user="+id)
-  .then(r=>r.text())
-  .then(d=>{
-    document.getElementById("points").innerText=d;
-  });
-}
-
-// EARN (optional)
-function earn(point){
-  const id = localStorage.getItem("id");
-
-  fetch(API + "?action=addPoints&user="+id+"&amount="+point)
-  .then(()=>loadPoints());
-}
-
-// TAB SWITCH
-function showTab(tab) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
-}
-
-// SUBMIT TASK
-function submitTask(taskId){
-  const id = localStorage.getItem("id");
-
-  if(localStorage.getItem("task"+taskId)){
-    alert("Already Submitted");
-    return;
-  }
-
-  localStorage.setItem("task"+taskId, "submitted");
-
-  document.getElementById("btn"+taskId).style.display="none";
-  document.getElementById("status"+taskId).innerText="Submitted for verification";
-
-  fetch(API + "?action=submitTask&user="+id+"&task="+taskId);
-}
-
-// LOAD TASK STATUS
-function loadTaskStatus(){
-  [1,2].forEach(taskId=>{
-    if(localStorage.getItem("task"+taskId)){
-      const btn = document.getElementById("btn"+taskId);
-      const status = document.getElementById("status"+taskId);
-
-      if(btn) btn.style.display="none";
-      if(status) status.innerText="Submitted for verify";
-    }
-  });
-}
-
-  function uploadTask(taskId){
-  const id = localStorage.getItem("id");
-  const fileInput = document.getElementById("file"+taskId);
-  const file = fileInput.files[0];
-
-  if(!file){
-    alert("Select screenshot first");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function(){
-    const base64 = reader.result.split(",")[1];
-
-    fetch(API, {
-      method:"POST",
-      body: JSON.stringify({
-        action:"upload",
-        user:id,
-        task:taskId,
-        file:base64,
-        name:file.name
-      })
-    })
-    .then(r=>r.text())
-    .then(res=>{
-      localStorage.setItem("task"+taskId,"submitted");
-
-      document.getElementById("status"+taskId).innerText="Submitted for verification";
-      document.getElementById("file"+taskId).style.display="none";
-
-      alert("Uploaded সফল");
+  fetch(API + "?action=getUser&uid=" + uid)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("name").innerText = data[1];
+      document.getElementById("uid").innerText = data[0];
+      document.getElementById("points").innerText = data[3];
     });
-  };
-
-  reader.readAsDataURL(file);
 }
 
-// AUTO START
-startApp();
+function showTasks() {
+  document.getElementById("content").innerHTML = `
+    <div class="bg-white p-4 rounded shadow">
+      <h2>Watch Video</h2>
+    </div>
+    <div class="bg-white p-4 rounded shadow mt-2">
+      <h2>Subscribe Channel</h2>
+    </div>
+  `;
+}
+
+function showServices() {
+  document.getElementById("content").innerHTML = `
+    <div class="text-center text-gray-500">Coming Soon</div>
+  `;
+}
+
+loadUser();
 </script>
 
 </body>

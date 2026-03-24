@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,19 +9,20 @@
 
 <body class="bg-gray-100">
 
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="flex items-center justify-center h-screen">
-  <div class="bg-white p-6 rounded-2xl shadow-lg text-center w-80">
-    <h1 class="text-2xl font-bold mb-4">SubBoost Pro</h1>
+<!-- LOGIN / REGISTER -->
+<div id="authPage" class="flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-2xl shadow w-80">
 
-    <!-- TELEGRAM LOGIN -->
-    <script async src="https://telegram.org/js/telegram-widget.js?22"
-      data-telegram-login="SubBoostProIZC_bot"
-      data-size="large"
-      data-userpic="false"
-      data-request-access="write"
-      data-onauth="onTelegramAuth(user)">
-    </script>
+    <h1 class="text-2xl font-bold text-center mb-4">SubBoost Pro</h1>
+
+    <input id="name" placeholder="Enter Name" class="w-full border p-2 rounded mb-2">
+    <input id="password" type="password" placeholder="Enter Password" class="w-full border p-2 rounded mb-3">
+
+    <button onclick="login()" class="w-full bg-black text-white py-2 rounded mb-2">Login</button>
+    <button onclick="register()" class="w-full bg-blue-500 text-white py-2 rounded">Register</button>
+
+    <p id="msg" class="text-center text-sm mt-2 text-red-500"></p>
+
   </div>
 </div>
 
@@ -29,25 +31,21 @@
 
   <h1 class="text-2xl font-bold text-center">SubBoost Pro</h1>
 
-  <!-- USER INFO -->
-  <div class="mt-4 bg-white p-4 rounded-2xl shadow">
-    <p><b>Name:</b> <span id="name"></span></p>
-    <p><b>UID:</b> <span id="uid"></span></p>
+  <div class="mt-4 bg-white p-4 rounded-xl shadow">
+    <p><b>Name:</b> <span id="d_name"></span></p>
+    <p><b>UID:</b> <span id="d_uid"></span></p>
   </div>
 
-  <!-- POINTS -->
-  <div class="mt-4 bg-blue-500 text-white p-4 rounded-2xl shadow text-center">
-    <h2 class="text-lg">Total Points</h2>
-    <p id="points" class="text-2xl font-bold">0</p>
+  <div class="mt-4 bg-blue-500 text-white p-4 rounded-xl text-center">
+    <h2>Total Points</h2>
+    <p id="points">0</p>
   </div>
 
-  <!-- TABS -->
   <div class="mt-4 flex gap-2">
-    <button onclick="showTasks()" class="flex-1 bg-black text-white py-2 rounded-xl">Tasks</button>
-    <button onclick="showServices()" class="flex-1 bg-gray-300 py-2 rounded-xl">Services</button>
+    <button onclick="showTasks()" class="flex-1 bg-black text-white py-2 rounded">Tasks</button>
+    <button onclick="showServices()" class="flex-1 bg-gray-300 py-2 rounded">Services</button>
   </div>
 
-  <!-- CONTENT -->
   <div id="content" class="mt-4"></div>
 
 </div>
@@ -55,139 +53,90 @@
 <script>
 const API = "https://script.google.com/macros/s/AKfycbz4Xst9BLkU8DOi4XJnfkW7oyOq6KEMFNx9uCaH07LPfS1shi7l8ZeiuAJblDXSmMepmg/exec";
 
-//////////////////////
-// TELEGRAM LOGIN
-//////////////////////
-function onTelegramAuth(user) {
-  localStorage.setItem("uid", user.id);
-  localStorage.setItem("name", user.first_name);
+function login() {
+  const name = document.getElementById("name").value;
+  const password = document.getElementById("password").value;
 
-  showDashboard();
-}
-
-//////////////////////
-// SHOW DASHBOARD
-//////////////////////
-function showDashboard() {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-
-  document.getElementById("name").innerText = localStorage.getItem("name");
-  document.getElementById("uid").innerText = localStorage.getItem("uid");
-
-  loadUser();
-}
-
-//////////////////////
-// LOAD USER DATA
-//////////////////////
-function loadUser() {
-  const uid = localStorage.getItem("uid");
-
-  fetch(API + "?action=getUser&uid=" + uid + "&name=" + localStorage.getItem("name"))
+  fetch(`${API}?action=login&name=${name}&password=${password}`)
     .then(res => res.json())
     .then(data => {
-      if(data){
-        document.getElementById("points").innerText = data[3] || 0;
+      if(data.status === "success"){
+        localStorage.setItem("uid", data.uid);
+        localStorage.setItem("name", data.name);
+        showDashboard();
       } else {
-        document.getElementById("points").innerText = 0;
+        document.getElementById("msg").innerText = data.message;
       }
     });
 }
 
-//////////////////////
-// TASKS TAB
-//////////////////////
+function register() {
+  const name = document.getElementById("name").value;
+  const password = document.getElementById("password").value;
+
+  fetch(`${API}?action=register&name=${name}&password=${password}`)
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === "success"){
+        alert("Registered সফল! এখন login করো");
+      } else {
+        document.getElementById("msg").innerText = data.message;
+      }
+    });
+}
+
+function showDashboard() {
+  document.getElementById("authPage").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  document.getElementById("d_name").innerText = localStorage.getItem("name");
+  document.getElementById("d_uid").innerText = localStorage.getItem("uid");
+
+  loadUser();
+}
+
+function loadUser() {
+  const uid = localStorage.getItem("uid");
+
+  fetch(`${API}?action=getUser&uid=${uid}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("points").innerText = data.points || 0;
+    });
+}
+
 function showTasks() {
   document.getElementById("content").innerHTML = `
-    <div class="bg-white p-4 rounded-xl shadow mb-3">
-      <h2 class="font-bold text-lg">Watch Video</h2>
-      <button onclick="openTask(1)" 
-        class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full">
-        Open Task
-      </button>
-    </div>
-
-    <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="font-bold text-lg">Subscribe Channel</h2>
-      <button onclick="openTask(2)" 
-        class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full">
-        Open Task
-      </button>
+    <div class="bg-white p-4 rounded shadow mb-2">
+      <h2>Watch Video</h2>
+      <button onclick="openTask(1)" class="bg-blue-500 text-white px-3 py-1 mt-2 rounded w-full">Open</button>
     </div>
   `;
 }
 
-//////////////////////
-// SERVICES TAB
-//////////////////////
 function showServices() {
+  document.getElementById("content").innerHTML = "Coming Soon";
+}
+
+function openTask(id) {
   document.getElementById("content").innerHTML = `
-    <div class="text-center text-gray-500 mt-10 text-lg">
-      🚀 Coming Soon
-    </div>
+    <input type="file" id="file" class="w-full mb-2">
+    <button onclick="submitTask(${id})" class="bg-green-500 text-white px-4 py-2 rounded w-full">Submit</button>
   `;
 }
 
-//////////////////////
-// OPEN TASK PAGE
-//////////////////////
-function openTask(taskId) {
-  document.getElementById("content").innerHTML = `
-    <div class="bg-white p-4 rounded-xl shadow">
-
-      <h2 class="font-bold text-lg mb-2">Complete Task</h2>
-
-      <p class="text-sm text-gray-500 mb-3">
-        Task complete kore screenshot upload koro
-      </p>
-
-      <input type="file" id="file" class="w-full border p-2 rounded">
-
-      <button onclick="submitTask(${taskId})"
-        class="bg-green-500 text-white px-4 py-2 mt-3 rounded-lg w-full">
-        Submit Screenshot
-      </button>
-
-      <button onclick="showTasks()"
-        class="bg-gray-300 px-4 py-2 mt-2 rounded-lg w-full">
-        Back
-      </button>
-
-    </div>
-  `;
-}
-
-//////////////////////
-// SUBMIT TASK
-//////////////////////
 function submitTask(taskId) {
   const file = document.getElementById("file").files[0];
-
-  if(!file){
-    alert("Please upload screenshot");
-    return;
-  }
-
   const reader = new FileReader();
 
   reader.onload = function() {
-    const base64 = reader.result;
-    const uid = localStorage.getItem("uid");
-
-    fetch(API + "?action=submit&uid=" + uid + "&task=" + taskId + "&img=" + encodeURIComponent(base64))
-      .then(() => {
-        alert("✅ Submitted successfully!");
-        showTasks();
-      });
+    fetch(`${API}?action=submit&uid=${localStorage.getItem("uid")}&task=${taskId}&img=${encodeURIComponent(reader.result)}`)
+      .then(() => alert("Submitted"));
   };
 
   reader.readAsDataURL(file);
 }
 
-//////////////////////
-// AUTO LOGIN
-//////////////////////
 if(localStorage.getItem("uid")){
   showDashboard();
 }

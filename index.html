@@ -1,70 +1,199 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
   <title>SubBoost Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100">
 
-<div class="p-4">
-  <h1 class="text-2xl font-bold">SubBoost Pro</h1>
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-2xl shadow-lg text-center w-80">
+    <h1 class="text-2xl font-bold mb-4">SubBoost Pro</h1>
 
-  <!-- User Info -->
-  <div class="mt-4 bg-white p-4 rounded-xl shadow">
-    <p>Name: <span id="name"></span></p>
-    <p>UID: <span id="uid"></span></p>
+    <!-- TELEGRAM LOGIN -->
+    <script async src="https://telegram.org/js/telegram-widget.js?22"
+      data-telegram-login="SubBoostProIZC_bot"
+      data-size="large"
+      data-userpic="false"
+      data-request-access="write"
+      data-onauth="onTelegramAuth(user)">
+    </script>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden p-4 max-w-md mx-auto">
+
+  <h1 class="text-2xl font-bold text-center">SubBoost Pro</h1>
+
+  <!-- USER INFO -->
+  <div class="mt-4 bg-white p-4 rounded-2xl shadow">
+    <p><b>Name:</b> <span id="name"></span></p>
+    <p><b>UID:</b> <span id="uid"></span></p>
   </div>
 
-  <!-- Points Card -->
-  <div class="mt-4 bg-blue-500 text-white p-4 rounded-xl">
-    <h2>Total Points</h2>
-    <p id="points">0</p>
+  <!-- POINTS -->
+  <div class="mt-4 bg-blue-500 text-white p-4 rounded-2xl shadow text-center">
+    <h2 class="text-lg">Total Points</h2>
+    <p id="points" class="text-2xl font-bold">0</p>
   </div>
 
-  <!-- Tabs -->
+  <!-- TABS -->
   <div class="mt-4 flex gap-2">
-    <button onclick="showTasks()" class="bg-black text-white px-4 py-2 rounded">Tasks</button>
-    <button onclick="showServices()" class="bg-gray-300 px-4 py-2 rounded">Services</button>
+    <button onclick="showTasks()" class="flex-1 bg-black text-white py-2 rounded-xl">Tasks</button>
+    <button onclick="showServices()" class="flex-1 bg-gray-300 py-2 rounded-xl">Services</button>
   </div>
 
-  <!-- Content -->
+  <!-- CONTENT -->
   <div id="content" class="mt-4"></div>
+
 </div>
 
 <script>
-const API = "YOUR_GOOGLE_SCRIPT_URL";
+const API = "https://script.google.com/macros/s/AKfycbz4Xst9BLkU8DOi4XJnfkW7oyOq6KEMFNx9uCaH07LPfS1shi7l8ZeiuAJblDXSmMepmg/exec";
 
+//////////////////////
+// TELEGRAM LOGIN
+//////////////////////
+function onTelegramAuth(user) {
+  localStorage.setItem("uid", user.id);
+  localStorage.setItem("name", user.first_name);
+
+  showDashboard();
+}
+
+//////////////////////
+// SHOW DASHBOARD
+//////////////////////
+function showDashboard() {
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  document.getElementById("name").innerText = localStorage.getItem("name");
+  document.getElementById("uid").innerText = localStorage.getItem("uid");
+
+  loadUser();
+}
+
+//////////////////////
+// LOAD USER DATA
+//////////////////////
 function loadUser() {
   const uid = localStorage.getItem("uid");
 
   fetch(API + "?action=getUser&uid=" + uid)
     .then(res => res.json())
     .then(data => {
-      document.getElementById("name").innerText = data[1];
-      document.getElementById("uid").innerText = data[0];
-      document.getElementById("points").innerText = data[3];
+      if(data){
+        document.getElementById("points").innerText = data[3] || 0;
+      } else {
+        document.getElementById("points").innerText = 0;
+      }
     });
 }
 
+//////////////////////
+// TASKS TAB
+//////////////////////
 function showTasks() {
   document.getElementById("content").innerHTML = `
-    <div class="bg-white p-4 rounded shadow">
-      <h2>Watch Video</h2>
+    <div class="bg-white p-4 rounded-xl shadow mb-3">
+      <h2 class="font-bold text-lg">Watch Video</h2>
+      <button onclick="openTask(1)" 
+        class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full">
+        Open Task
+      </button>
     </div>
-    <div class="bg-white p-4 rounded shadow mt-2">
-      <h2>Subscribe Channel</h2>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="font-bold text-lg">Subscribe Channel</h2>
+      <button onclick="openTask(2)" 
+        class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full">
+        Open Task
+      </button>
     </div>
   `;
 }
 
+//////////////////////
+// SERVICES TAB
+//////////////////////
 function showServices() {
   document.getElementById("content").innerHTML = `
-    <div class="text-center text-gray-500">Coming Soon</div>
+    <div class="text-center text-gray-500 mt-10 text-lg">
+      🚀 Coming Soon
+    </div>
   `;
 }
 
-loadUser();
+//////////////////////
+// OPEN TASK PAGE
+//////////////////////
+function openTask(taskId) {
+  document.getElementById("content").innerHTML = `
+    <div class="bg-white p-4 rounded-xl shadow">
+
+      <h2 class="font-bold text-lg mb-2">Complete Task</h2>
+
+      <p class="text-sm text-gray-500 mb-3">
+        Task complete kore screenshot upload koro
+      </p>
+
+      <input type="file" id="file" class="w-full border p-2 rounded">
+
+      <button onclick="submitTask(${taskId})"
+        class="bg-green-500 text-white px-4 py-2 mt-3 rounded-lg w-full">
+        Submit Screenshot
+      </button>
+
+      <button onclick="showTasks()"
+        class="bg-gray-300 px-4 py-2 mt-2 rounded-lg w-full">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+//////////////////////
+// SUBMIT TASK
+//////////////////////
+function submitTask(taskId) {
+  const file = document.getElementById("file").files[0];
+
+  if(!file){
+    alert("Please upload screenshot");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function() {
+    const base64 = reader.result;
+    const uid = localStorage.getItem("uid");
+
+    fetch(API + "?action=submit&uid=" + uid + "&task=" + taskId + "&img=" + encodeURIComponent(base64))
+      .then(() => {
+        alert("✅ Submitted successfully!");
+        showTasks();
+      });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+//////////////////////
+// AUTO LOGIN
+//////////////////////
+if(localStorage.getItem("uid")){
+  showDashboard();
+}
 </script>
 
 </body>
 </html>
+```
